@@ -1,0 +1,24 @@
+# shinobi-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shinobi-db-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /home/jahangir/ShinobiDatabase
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shinobi-data-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /home/jahangir/Shinobi

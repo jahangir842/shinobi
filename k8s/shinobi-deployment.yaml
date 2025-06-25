@@ -1,0 +1,47 @@
+# shinobi-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shinobi
+  namespace: shinobi-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shinobi
+  template:
+    metadata:
+      labels:
+        app: shinobi
+    spec:
+      containers:
+        - name: shinobi
+          image: registry.gitlab.com/shinobi-systems/shinobi:dev
+          ports:
+            - containerPort: 8080
+            - containerPort: 21
+          resources:
+            limits:
+              memory: "2Gi"
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/mysql
+            - name: shinobi-storage
+              mountPath: /home/Shinobi/videos
+              subPath: videos
+            - name: shinobi-storage
+              mountPath: /home/Shinobi/config
+              subPath: config
+            - name: shinobi-storage
+              mountPath: /home/Shinobi/plugins
+              subPath: plugins
+            - name: shinobi-storage
+              mountPath: /home/Shinobi/streams
+              subPath: streams
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: shinobi-db-pvc
+        - name: shinobi-storage
+          persistentVolumeClaim:
+            claimName: shinobi-data-pvc
