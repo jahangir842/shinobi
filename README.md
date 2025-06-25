@@ -11,12 +11,14 @@ The Kubernetes manifests are located in the `k8s/` directory:
 - `shinobi-pvc.yaml`: `PersistentVolumeClaim`s that request storage from the `PersistentVolume`s.
 - `shinobi-deployment.yaml`: Deploys the Shinobi application. It uses the official development image and mounts the persistent volumes for data storage.
 - `shinobi-service.yaml`: Exposes the Shinobi web UI and FTP service using a `NodePort` service.
+- `shinobi-ingress.yaml`: Creates an Ingress resource to expose the Shinobi web UI via the hostname `shinobi.local`.
 
 ## Prerequisites
 
 - A running Kubernetes cluster.
 - `kubectl` installed and configured to communicate with your cluster.
 - Host directories for persistent storage.
+- An Ingress controller (like NGINX) running in your cluster.
 
 ## Deployment
 
@@ -51,6 +53,10 @@ This will create the PersistentVolumes, PersistentVolumeClaims, Deployment, and 
 
 ### 3. Accessing Shinobi
 
+There are two ways to access the Shinobi web interface:
+
+#### Using NodePort
+
 The Shinobi web interface is exposed via a `NodePort`. To access it, you need the IP address of one of your Kubernetes nodes and the port specified in the service.
 
 1.  Find the `NodePort` for the `http` service:
@@ -70,6 +76,25 @@ The Shinobi web interface is exposed via a `NodePort`. To access it, you need th
 3.  Open your web browser and navigate to:
 
     `http://<NODE_IP_ADDRESS>:30080`
+
+#### Using Ingress
+
+If you have an Ingress controller running in your cluster, you can access Shinobi using the configured hostname.
+
+1.  Get the external IP address of your Ingress controller's service. This command varies depending on your Ingress controller, but for the NGINX Ingress controller it is typically:
+
+    ```bash
+    kubectl get svc -n ingress-nginx
+    ```
+    Look for the `EXTERNAL-IP` of the `ingress-nginx-controller` service.
+
+2.  Add an entry to your local `/etc/hosts` file to map the Ingress IP to the hostname:
+
+    ```
+    <INGRESS_EXTERNAL_IP> shinobi.local
+    ```
+
+3.  You can now access the Shinobi web UI by navigating to `http://shinobi.local` in your web browser.
 
 ## Cleanup
 
